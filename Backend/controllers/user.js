@@ -51,13 +51,20 @@ exports.signup = (req, res, next) => {
         lastname: lastname,
         isAdmin: 0,
       })
-        .then((newUser) =>
+      .then((newUser) =>{
+          const newToken = jwt.sign(
+                { userId: newUser.id, isAdmin: newUser.isAdmin },
+                `${process.env.TOKEN_SECRET}`,
+                { expiresIn: "24h" }
+              )
+
           res.status(201).json({
-            message: "compte crée avec succes",
             userId: newUser.id,
+            token:  newToken
           })
-        )
-        .catch((err) => res.status(500).json({ err }));
+        }
+          )
+          .catch((err) => res.status(500).json({ err }));
     })
     .catch((err) => res.status(500).json({ err }));
 };
@@ -108,6 +115,7 @@ exports.getUserProfil = (req, res, next) => {
      { if (user == null){
           res.status(404).json({ err: "l'utilisateur n'existe pas"})
       }
+      
        res.status(200).json(user)})
       .catch((error) => res.status(400).json({ error }));
 };

@@ -15,18 +15,22 @@
             <label for="password">Mot de passe:</label><br>
             <input v-model="password"  type="password" id="password" name="password" placeholder="*********" required><br>
          </div>
-         <div class="invalid" v-if="mode == 'login' && status == 'error_login'"> * email et/ou mot de passe incorrect</div>
+         <div class="invalid" v-if="mode == 'login' && status == 'error_login'"> * email et/ou mot de passe incorrect *</div>
          <div v-if="mode == 'signup'">
             <label  for="firstname">Nom</label><br>
             <input v-model="prenom"  type="text" id="firstname" name="firstname" placeholder="Houde"><br>
             <label  for="lastname">Prenom</label><br>
             <input v-model="nom"  type="lastname" id="lastname" name="lastname" placeholder="Olivier"><br>
          </div>
+         <div v v-if="mode == 'signup' && status == 'error_login'">* Email deja utiliser ou/et mot de passe faible *<br> *le mot de passe doit acontenir au mini 4 caracteres et au moin un chiffre*</div>
          <button @click.prevent="loginAccount()" id="btn-login" class="btn-submit" :class="{'btn--disabled' : !validFild}" v-if="mode == 'login'">
          <span v-if="status == 'loading'">Connexion en cours ...</span>
          <span v-else>connexion</span>
          </button>
-         <button @click.prevent="createAccount()" type="submit" id="btn-signup" class="btn-submit" :class="{'btn--disabled' : !validFild}"  v-else>s'inscrire</button>
+         <button @click="createAccount()" type="submit" id="btn-signup" class="btn-submit" :class="{'btn--disabled' : !validFild}"  v-else>
+            <span v-if="status == 'loading'">Creation de compte en cours ...</span>
+            <span v-else>S'inscrite</span>
+         </button>
 
       </form>
       </div>
@@ -35,7 +39,7 @@
 
 <script>
 import { mapState } from 'vuex'
-/* import logo from './assets/logo.png' */
+
 
 export default {
   name: 'login',
@@ -73,30 +77,29 @@ export default {
      login: function () {
         this.mode = 'login';
         },
-     createAccount: function () {
-        const self = this;
-        this.$store.dispatch('createAccount', {
-           email: this.email,
-           lastname: this.prenom,
-           firstname: this.nom,
-           password: this.password,
-           }).then(() => {
-              self.login()
-           }).catch((err) => console.log(err))
-        
-        },
       loginAccount: function() {
+         
          const self = this;
          this.$store.dispatch('loginAccount', {
             email: this.email,
             password: this.password,
-         }).then((res) => {
-            if (res.status == 200) {
-               self.$router.push('/acceuil')
-            }
+         }).then(() => {  
+            self.$router.push('/home');  
          }).catch((err) => console.log(err))
 
-      }
+      },
+            createAccount: function () {
+               const self = this;
+               this.$store.dispatch('createAccount', {
+                  email: this.email,
+                  lastname: this.prenom,
+                  firstname: this.nom,
+                  password: this.password,
+                  }).then(() => {
+                     self.loginAccount()
+                  }).catch((err) => console.log(err))
+               
+               },
    },
 }
 </script>
