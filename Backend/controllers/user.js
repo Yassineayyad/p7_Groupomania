@@ -28,7 +28,7 @@ exports.signup = (req, res, next) => {
     lastname == null ||
     lastname == null
   ) {
-    return res.status(400).json({ err: "merci de reseigner tous les champs " });
+    return res.status(400).json({ message: "merci de reseigner tous les champs " });
   }
   // verification
 
@@ -72,7 +72,7 @@ exports.login = (req, res, next) => {
     return res.status(400).json({ err: "merci de reseigner tous les champs " });
   }
   models.User.findOne({ where: { email: email } })
-    .then((user) => {
+    .then( (user) => {
       if (!user) {
         return res
           .status(401)
