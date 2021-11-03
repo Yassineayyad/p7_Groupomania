@@ -18,9 +18,9 @@
          <div class="invalid" v-if="mode == 'login' && status == 'error_login'"> * email et/ou mot de passe incorrect *</div>
          <div v-if="mode == 'signup'">
             <label  for="firstname">Nom</label><br>
-            <input v-model="prenom"  type="text" id="firstname" name="firstname" placeholder="Houde"><br>
+            <input v-model="firstname"  type="text" id="firstname" name="firstname" placeholder="Houde"><br>
             <label  for="lastname">Prenom</label><br>
-            <input v-model="nom"  type="lastname" id="lastname" name="lastname" placeholder="Olivier"><br>
+            <input v-model="lastname"  type="lastname" id="lastname" name="lastname" placeholder="Olivier"><br>
          </div>
          <div v v-if="mode == 'signup' && status == 'error_login'">* Email deja utiliser ou/et mot de passe faible *<br> *le mot de passe doit acontenir au mini 4 caracteres et au moin un chiffre*</div>
          <button @click.prevent="loginAccount()" id="btn-login" class="btn-submit" :class="{'btn--disabled' : !validFild}" v-if="mode == 'login'">
@@ -48,14 +48,20 @@ export default {
         mode: 'login', 
         email: '',
         password: '',
-        prenom: '',
-        nom: '',
+        lastname: '',
+        firstname: '',
      }
+  },
+  mounted: function() {
+      if (this.$store.state.user.userId != -1) {
+               this.$router.push('/home');
+            return;
+            }
   },
   computed: {
      validFild : function () {
         if(this.mode == 'signup'){
-            if (this.email != "" && this.prenom != "" && this.nom != "" && this.password != "") {
+            if (this.email != "" && this.lastname != "" && this.firstname != "" && this.password != "") {
                return true;
             } else{
                return false;
@@ -92,8 +98,8 @@ export default {
                const self = this;
                this.$store.dispatch('createAccount', {
                   email: this.email,
-                  lastname: this.prenom,
-                  firstname: this.nom,
+                  lastname: this.lastname,
+                  firstname: this.firstname,
                   password: this.password,
                   }).then(() => {
                      self.loginAccount()

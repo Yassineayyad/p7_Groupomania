@@ -16,9 +16,7 @@ const passwordRegex = /^(?=.*\d).{4,8}$/;
 exports.signup = (req, res, next) => {
   // params
   //chiffrer l'email avant de l'envoyer a la base de données
-  let email = cryptojs
-    .HmacSHA256(req.body.email, `${process.env.CRYPTOJS_KEY_EMAIL}`)
-    .toString();
+  let email = req.body.email;
   let firstname = req.body.firstname;
   let lastname = req.body.lastname;
   let password = req.body.password;
@@ -71,9 +69,7 @@ exports.signup = (req, res, next) => {
 
 exports.login = (req, res, next) => {
   // params
-  let email = cryptojs
-    .HmacSHA256(req.body.email, `${process.env.CRYPTOJS_KEY_EMAIL}`)
-    .toString();
+  let email = req.body.email;
   let password = req.body.password;
   if (email == null || password == null) {
     return res.status(400).json({ err: "merci de reseigner tous les champs " });
@@ -108,14 +104,18 @@ exports.login = (req, res, next) => {
 };
 
 exports.getUserProfil = (req, res, next) => {
-    models.User.findOne({ 
-        attributes: ['id', 'firstname','lastname'],
-        where: {id: req.params.id} })
-      .then((user) =>
-     { if (user == null){
-          res.status(404).json({ err: "l'utilisateur n'existe pas"})
-      }
-      
+  models.User.findOne({ 
+    attributes: ['id', 'firstname','lastname', 'email'],
+    where: {id: req.params.id} })
+    .then((user) =>
+    { if (user == null){
+      res.status(404).json({ err: "l'utilisateur n'existe pas"})
+    }
+    /* let emailDecrypt = cryptojs.AES.decrypt(
+      email,
+      `${process.env.CRYPTOJS_KEY_EMAIL}`
+    ).toString(cryptojs.enc.HmacSHA256) */
+    
        res.status(200).json(user)})
       .catch((error) => res.status(400).json({ error }));
 };
