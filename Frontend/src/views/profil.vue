@@ -13,8 +13,9 @@
         <div class="card">
             <div class="card-info">
                 <h1>Bienvenu sur votre profile</h1>
-                <p>{{user.firstname}} {{user.lastname}} </p>
-                <p>{{user.email}}</p>
+                <p class="info">{{user.firstname}} {{user.lastname}} </p>
+                <img :src=user.imageurl alt="photo de profile" >
+                <p class="info">{{user.email}}</p>
                 <button>Modifier mes information</button>
             </div>
             <div class="card-update"></div>
@@ -72,4 +73,15 @@ export default {
 .header-img {
     width: 200px;
 }
+.card-info{
+    width: 450px;
+    margin: 100px auto 10px auto;
+    background: chocolate;
+    border: solid white ;
+    padding-bottom: 20px;
+}
+img{
+    width: 150px;
+};
+
 </style>

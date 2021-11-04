@@ -20,18 +20,15 @@ exports.getAllPost = (req, res, next) => {
 };
 
 exports.createPost = (req, res, next) => {
-  let content = JSON.parse(req.body.post);
+  let content = req.body.post;
 
   const newPost = models.Post.create({
     ...content,
-    imageURL: `${req.protocol}://${req.get("host")}/images/${
+    /* imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
-    }`, // on resout chaque segment de l'url
+    }`,  */// on resout chaque segment de l'url
     likes: 0,
-    dislikes: 0,
-
-    usersLiked: [],
-    usersDisliked: [],
+    
   })
     .then((newPost) =>
       res.status(201).json({

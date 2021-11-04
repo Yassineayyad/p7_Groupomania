@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const cryptojs = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const { mode } = require("crypto-js");
+const user = require("../models/user");
 require("dotenv").config({ path: "./config/.env" });
 
 // const
@@ -48,21 +49,21 @@ exports.signup = (req, res, next) => {
         firstname: firstname,
         lastname: lastname,
         isAdmin: 0,
+        imageurl: "http://image.noelshack.com/fichiers/2021/44/3/1635930291-765-default-avatar.png",
       })
-      .then((newUser) =>{
+        .then((newUser) => {
           const newToken = jwt.sign(
-                { userId: newUser.id, isAdmin: newUser.isAdmin },
-                `${process.env.TOKEN_SECRET}`,
-                { expiresIn: "24h" }
-              )
+            { userId: newUser.id, isAdmin: newUser.isAdmin },
+            `${process.env.TOKEN_SECRET}`,
+            { expiresIn: "24h" }
+          );
 
           res.status(201).json({
             userId: newUser.id,
-            token:  newToken
-          })
-        }
-          )
-          .catch((err) => res.status(500).json({ err }));
+            token: newToken,
+          });
+        })
+        .catch((err) => res.status(500).json({ err }));
     })
     .catch((err) => res.status(500).json({ err }));
 };
@@ -105,7 +106,7 @@ exports.login = (req, res, next) => {
 
 exports.getUserProfil = (req, res, next) => {
   models.User.findOne({ 
-    attributes: ['id', 'firstname','lastname', 'email'],
+    attributes: ['id', 'firstname','lastname', 'email', 'imageurl'],
     where: {id: req.params.id} })
     .then((user) =>
     { if (user == null){
@@ -124,8 +125,12 @@ exports.updateProfil = (req, res, next) => {
     //parms 
     let firstname = req.body.firstname;
     let lastname = req.body.lastname;
-     models.User.findOne({
-       attributes: ["id", "firstname", "lastname"],
+    let imageurl = `${req.protocol}://${req.get("host")}/images/${
+      req.file.filename
+    }`;
+    
+    models.User.findOne({
+       attributes: ["id", "firstname", "lastname", "imageurl"],
        where: { id: req.params.id }
      })
      .then((user) =>
@@ -134,7 +139,8 @@ exports.updateProfil = (req, res, next) => {
       }else{
           user.update({
               firstname: (firstname ? firstname : user.firstname),
-              lastname: (lastname ? lastname : user.lastname)
+              lastname: (lastname ? lastname : user.lastname),
+              imageurl: (imageurl ? imageurl: user.imageurl)
           })
       }
        res.status(200).json(user)})

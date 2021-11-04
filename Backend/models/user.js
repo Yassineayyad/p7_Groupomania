@@ -1,4 +1,3 @@
-// commande : sequelize model:create --attributes "email:string username:string password:string isAdmin:boolean" --name User
 'use strict';
 const {
   Model
@@ -15,21 +14,16 @@ module.exports = (sequelize, DataTypes) => {
       models.User.hasMany(models.Post)
     }
   };
-  User.init(
-    {
-      email:{
-        type: DataTypes.STRING,
-        unique: true
-      },
-      firstname: DataTypes.STRING,
-      lastname: DataTypes.STRING,
-      password: DataTypes.STRING,
-      isAdmin: DataTypes.BOOLEAN,
-    },
-    {
-      sequelize,
-      modelName: "User",
-    }
-  );
+  User.init({
+    email: DataTypes.STRING,
+    firstname: DataTypes.STRING,
+    lastname: DataTypes.STRING,
+    password: DataTypes.STRING,
+    imageurl: DataTypes.STRING,
+    isAdmin: DataTypes.BOOLEAN
+  }, {
+    sequelize,
+    modelName: 'User',
+  });
   return User;
 };

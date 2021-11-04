@@ -1,4 +1,3 @@
-// commande : sequelize model:create --attributes "USERS_Id:integer content:string imageURL:string likes:integer dislikes:integer" --name Post
 'use strict';
 const {
   Model
@@ -12,19 +11,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.Post.belongsTo(models.User,{
+      models.Post.belongsTo(models.User, {
         foreignKey:{
-          allowNull: false
+          allowNull: false,
         }
       })
     }
   };
   Post.init({
-    USERS_Id: DataTypes.INTEGER,
+    idUSERS: DataTypes.INTEGER,
+    titre: DataTypes.STRING,
     content: DataTypes.STRING,
-    imageURL: DataTypes.STRING,
+    attachement: DataTypes.STRING,
     likes: DataTypes.INTEGER,
-    dislikes: DataTypes.INTEGER
+    imageUrl: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Post',
