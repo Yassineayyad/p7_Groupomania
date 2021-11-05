@@ -16,16 +16,8 @@ module.exports = {
           key:'id'
         }
       },
-      titre: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
       content: {
         allowNull: false,
-        type: Sequelize.STRING,
-      },
-      attachement: {
-        allowNull: true,
         type: Sequelize.STRING,
       },
       likes: {

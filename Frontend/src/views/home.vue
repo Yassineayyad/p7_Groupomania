@@ -14,14 +14,8 @@
         <form class="createPost">
                 <h1>Poster un nouveau message</h1>
                 <div class="item">
-                <p>Title</p>
-                <div>
-                    <input type="text" placeholder="Title" v-model="title"/>
-                </div>
-                </div>
-                <div class="item">
                 <p>Message</p>
-                <textarea v-model="content"></textarea>
+                <textarea  class="content" v-model="content"></textarea>
                 </div>
             <div class="item">
                 <p>Ajouter une image</p>
@@ -29,22 +23,25 @@
                 </div>
             </form>
                 <div class="test">
-                <button @click="submit">Publier</button>
+                <button class="test-btn" @click="submit">Publier</button>
                 </div>
         </div>
         <div class="about">
             <div class="card" v-for="post in posts" :key="post">
                 <!-- <router-link :to="{ name: 'Onepost', params: { id: post.id }}"> -->
-                <!-- <h1 class="card__title" >{{ post.User.firstname }} {{ post.User.lastname }}</h1> -->
+                <div class="card__title">
+                    <img class="card-img" :src=post.User.imageurl alt="photo de profile">
+                    <h1 class="title" >{{ post.User.firstname }} {{ post.User.lastname }}</h1>
+                </div>
                 <h3>{{ post.title}}</h3>
-                <p class="card__title">{{ post.content }}</p>
-                <p>Posté le {{ post.createdAt.slice(0,10).split("-").reverse().join("/")}} </p>
-                <p>id = {{ post.id }}</p>
-                <p> user id = {{ post.UserId }}</p>
+                <p class="card__content">{{ post.content }}</p>
+                <!-- <p>id = {{ post.id }}</p>
+                <p> user id = {{ post.UserId }}</p> -->
                 <img :src="post.imageUrl" alt=""/>
                <!--  </router-link> -->
                 <button v-if="post.UserId == this.$store.state.user.userId" @click.prevent="deletePost(post)">Supprimer</button>
                 <button v-else-if="this.$store.state.user.isAdmin == 1" @click="deletePost">Supprimer</button>
+                <p class="card-date">Posté le {{ post.createdAt.slice(0,10).split("-").reverse().join("/")}} </p>
             </div>
         </div>
    </div>
@@ -60,7 +57,9 @@ export default {
        return {
             title: "",
             content:"",
-            imageUrl: null, 
+            imageUrl: null,
+            firstname: "",
+            lastname: "", 
             posts: [],
             id: this.$route.params.id,
        }
@@ -131,6 +130,7 @@ export default {
         .then(()=>{
             alert("votre message a bien été posté !")
             this.$router.push("/home")
+            location.reload()
         })
         .catch((err) => {
             console.log(err);
@@ -180,8 +180,38 @@ export default {
   background: chocolate;
 
 }
-.card__title {
-  text-align:center;
+.card__content {
+  text-align:start;
   font-weight: 800;
+}
+.card__title{
+    margin: 0;
+    display: flex;
+    width: auto;
+    background: whitesmoke;
+    text-align: start;
+}
+.card-img{
+    width: 50px;
+    border-radius: 25px;
+    margin: 0 20px;
+}
+.title{
+font-size: 1.5em;
+}
+.content{
+    width: 600px;
+    height: 100px;
+}
+.test-btn{
+    margin-top: 20px;
+    width: 150px;
+    border-radius: 20px;
+    background: rgb(72, 72, 216);
+    color: white;
+}
+.card-date{
+    text-align: end;
+    margin: 0;
 }
 </style>

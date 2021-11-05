@@ -4,6 +4,7 @@ const fs = require("fs");
 const jwt = require("jsonwebtoken")
 const { post } = require("../app");
 const models = require("../models");
+const multer = require("multer")
 
 // les fonction
 
@@ -16,7 +17,15 @@ exports.getAllPost = (req, res, next) => {
   if (content <= 4) {
     return res.status(400).json({ err: "texte non valide" });
   } */
-  models.Post.findAll()
+  models.Post.findAll({
+    where: {},
+    include: [{
+      model:models.User,
+      where: {}
+    }],
+    order: [['id', 'DESC']]
+    
+  })
     .then((post) => res.status(200).json(post))
     .catch((error) => res.status(400).json({ error }));
 };
@@ -45,10 +54,10 @@ exports.createPost = async (req, res, next) => {
     const newPost = await models.Post.create({
       ...content,
       UserId: userId,
-      likes: likes
+      likes: likes,
       /* imageUrl: `${req.protocol}://${req.get("host")}/images/${
         req.file.filename
-      }`,  */ // on resout chaque segment de l'url
+      }`, */ // on resout chaque segment de l'url
     });
     /* newPost = await models.Post.findOne({
       where: { id: post.id },
