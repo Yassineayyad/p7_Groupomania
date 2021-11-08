@@ -8,15 +8,10 @@ const multer = require("multer")
 
 // les fonction
 
+
+// recuperation des postes
+
 exports.getAllPost = (req, res, next) => {
-  // parmas
-  /* let content = req.body.content;
-  if (content == null) {
-    return res.status(400).json({ err: "texte vide" });
-  }
-  if (content <= 4) {
-    return res.status(400).json({ err: "texte non valide" });
-  } */
   models.Post.findAll({
     where: {},
     include: [{
@@ -29,6 +24,8 @@ exports.getAllPost = (req, res, next) => {
     .then((post) => res.status(200).json(post))
     .catch((error) => res.status(400).json({ error }));
 };
+
+// cration des posts
 
 exports.createPost = async (req, res, next) => {
   let content = req.body
@@ -45,8 +42,8 @@ exports.createPost = async (req, res, next) => {
   console.log(content); */
   if (req.file) {
     
-    content = JSON.parse(req.body);
-    content.imageUrl = `${req.protocol}://${req.get("host")}/images/${
+    content = req.body;
+    imageUrl = `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`;
   }
@@ -55,9 +52,7 @@ exports.createPost = async (req, res, next) => {
       ...content,
       UserId: userId,
       likes: likes,
-      /* imageUrl: `${req.protocol}://${req.get("host")}/images/${
-        req.file.filename
-      }`, */ // on resout chaque segment de l'url
+      imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,   // on resout chaque segment de l'url
     });
     /* newPost = await models.Post.findOne({
       where: { id: post.id },
@@ -71,3 +66,82 @@ exports.createPost = async (req, res, next) => {
     res.status(400).json({ error });
   };
 };
+
+// modification des posts
+
+exports.modifyPost = (req, res, next) => {
+  // params
+  let content = req.body.content;
+  const headerAuth = req.headers["authorization"];
+  const token = headerAuth.split(" ")[1];
+  /* console.log("token - post");
+  console.log(token); */
+  const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
+  userId = decoded.userId;
+  let imageUrl = `${req.protocol}://${req.get("host")}/images/${
+      req.file.filename
+    }`;
+  models.Post.findOne({
+    attributes: ["id", "content", "userId", "imageUrl"],
+    where: {id: req.params.id},
+    where: {},
+    include: [{
+      model:models.User,
+      where: {}
+    }],
+  })
+  .then((post)=>{
+    if (post == null) {
+      res.status(404).json({err: "le poste n'existe pas"})
+    }else{
+      post.update({
+        content: (content ? content : post.content),
+        imageUrl: (imageUrl ? imageUrl: user.imageUrl)
+      })
+    }
+    res.status(200).json(post)})
+    .catch((err) => res.status(400).json({ err : "erreur 400" }));
+  };
+
+  // supprimer le post 
+
+  exports.deletePost = (req, res, next)=>{
+
+    //recuperation du token 
+    const headerAuth = req.headers["authorization"];
+    const token = headerAuth.split(" ")[1];
+    /* console.log("token - post");
+  console.log(token); */
+    const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
+    userPostId = decoded.userId;
+    isAdmin = decoded.isAdmin;
+    Posts= models.Post;
+
+    models.Post.findOne({
+      attributes: ["id", "content", "userId", "imageUrl"],
+      where: { id: req.params.id },
+    })
+    .then((post)=>{
+      console.log('post--->');
+      console.log(post);
+      if (post.userId == userPostId || isAdmin === true) {
+        if (imageUrl !== null) {
+          const filename = post.imageUrl.split('/images/')[1];
+          fs.unlink(`images/${filename}`, () => {
+                    Posts.destroy({ where: {id: req.params.id} })
+                    .then(() => res.status(200).json({ message: 'Poste et image supprimés !' }))
+                    .catch(error => res.status(400).json({ error }))
+                  });
+        }else{
+          Posts.destroy({ where: {id: req.params.id}})
+          .then(()=> res.status(200).json({message : 'poste supprimé !'}))
+          .catch(err => res.status(400).json({err}))
+        }
+      }else{
+        res.status(404).json({ 'error': 'Vous n\'avez pas les droits' });
+        console.log(post.UserId);
+        console.log(userId);
+      }
+    })
+    .catch(err => res.status(500).json({err :' poste introuvable'}));
+  }

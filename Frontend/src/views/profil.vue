@@ -14,9 +14,13 @@
             <div class="card-info">
                 <h1>Bienvenu sur votre profile</h1>
                 <p class="info">{{user.firstname}} {{user.lastname}} </p>
-                <img :src=user.imageurl alt="photo de profile" >
+                <div class="img--update">
+                    <img :src=user.imageurl alt="photo de profile" />
+                    <label for="image">Modifier votre photo de profile : </label>
+                    <input type="file" id="imageq" name="image"/>
+                </div>
                 <p class="info">{{user.email}}</p>
-                <button>Modifier mes information</button>
+                <button @click="deleteProfil(user)">Supprimer mon compte</button>
             </div>
             <div class="card-update"></div>
         </div>
@@ -27,6 +31,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { mapState } from 'vuex'
 export default {
   name: 'profil',
@@ -41,7 +46,27 @@ export default {
       this.$router.push('/');
     },
     update: function() {
-        
+       /*  const token = this.$store.state.user.token;
+        const userId = this.$store.state.user.userId */
+    },
+    deleteProfil: function(user){
+        const token = this.$store.state.user.token
+        const userId = this.$store.state.user.userId
+        const headers = { 
+        "Content-Type": "application/json",
+         Authorization: `Bearer ${token}`,
+      }
+      console.log(user.id);
+      axios.delete(`http://localhost:3000/api/auth/${userId}`, {headers})
+      .then(()=> {
+          
+          this.logout()
+          this.$router.push("/")
+          alert("votre profil a bien été supprimé ! ")
+      })
+      .catch((err)=>{
+          console.log(err);
+      })
     }
   }
 }
@@ -82,6 +107,10 @@ export default {
 }
 img{
     width: 150px;
-};
-
+}
+.img--update{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 </style>

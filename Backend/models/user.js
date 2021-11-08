@@ -13,6 +13,16 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       models.User.hasMany(models.Post)
     }
+     destroy () {
+      return this.update({
+        deleted: true,
+        email: `deleted-user${this.id}@groupomania.com`,
+        imageUrl: null,
+        firstName: 'Utilisateur',
+        lastName: 'Supprimé'
+      })
+    }
+  
   };
   User.init({
     email: DataTypes.STRING,

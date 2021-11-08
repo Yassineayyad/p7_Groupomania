@@ -133,8 +133,8 @@ exports.updateProfil = (req, res, next) => {
        attributes: ["id", "firstname", "lastname", "imageurl"],
        where: { id: req.params.id }
      })
-     .then((user) =>
-     { if (user == null){
+     .then((user) =>{
+        if (user == null){
           res.status(404).json({ err: "l'utilisateur n'existe pas"})
       }else{
           user.update({
@@ -147,11 +147,34 @@ exports.updateProfil = (req, res, next) => {
       .catch((error) => res.status(400).json({ error }));
 };
 exports.deleteProfil = (req, res, next) => {
+
+// recuperation de l'user id depui dle token
+   const headerAuth = req.headers["authorization"];
+   const token = headerAuth.split(" ")[1];
+   /* console.log("token - post");
+  console.log(token); */
+   const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
+   userId = decoded.userId;
+   isAdmin =decoded.isAdmin;
+
+
     models.User.findOne({
       attributes: ["id", "firstname", "lastname"],
       where: { id: req.params.id },
-    });
-   models.User.destroy({ where: { id: req.params.id } })
+    })
+    .then((user)=>{
+      if (user.id == userId || isAdmin === true) {
+        user
+          .destroy()
+          .then(() =>
+            res.status(200).json({ message: "Utilisateur supprimé !" })
+          )
+          .catch((error) => res.status(400).json({ error }));
+      }else{
+        res.status(404).json({ error: "L'utilisateur ne peut pas être supprimé" });
+      }
+    })
+  /*  models.User.destroy({ where: { id: req.params.id } })
      .then(() => res.status(200).json({ message: "utilisateur  supprimée!" }))
-     .catch((error) => res.status(400).json({ error }));
+     .catch((error) => res.status(400).json({ error })); */
 }
