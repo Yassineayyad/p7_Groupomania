@@ -6,8 +6,7 @@ const router = express.Router();
 const userCtrl = require("../controllers/user");
 const auth = require("../middleware/auth");
 const multer = require("../middleware/multer")
-const imageController = require('../controllers/upload')
-const imageUploader = require('../middleware/multer');
+
 
 
 
@@ -15,7 +14,7 @@ const imageUploader = require('../middleware/multer');
 router.post("/signup", userCtrl.signup);
 router.post("/login", userCtrl.login);
 router.get("/:id", auth, userCtrl.getUserProfil);
-router.put("/:id", auth, multer, userCtrl.updateProfil);
+router.put("/:id",auth, multer, userCtrl.updateProfil);
 router.delete("/:id", auth, userCtrl.deleteProfil);
 
 

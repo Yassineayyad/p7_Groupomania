@@ -121,31 +121,32 @@ exports.getUserProfil = (req, res, next) => {
       .catch((error) => res.status(400).json({ error }));
 };
 
-exports.updateProfil = (req, res, next) => {
-    //parms 
-    let firstname = req.body.firstname;
-    let lastname = req.body.lastname;
-    let imageurl = `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`;
-    
-    models.User.findOne({
-       attributes: ["id", "firstname", "lastname", "imageurl"],
-       where: { id: req.params.id }
-     })
-     .then((user) =>{
-        if (user == null){
-          res.status(404).json({ err: "l'utilisateur n'existe pas"})
-      }else{
-          user.update({
-              firstname: (firstname ? firstname : user.firstname),
-              lastname: (lastname ? lastname : user.lastname),
-              imageurl: (imageurl ? imageurl: user.imageurl)
-          })
-      }
-       res.status(200).json(user)})
-      .catch((error) => res.status(400).json({ error }));
-};
+exports.updateProfil = async (req, res, next) => {
+  const user = models.User.findOne({
+    attributes: ["id", "firstname", "lastname", "imageurl"],
+    where: { id: req.params.id },
+  });
+  if (user) {
+    user.firstname= req.body.firstname;
+    user.lastname = req.body.lastname;
+    if (req.file) {
+      user.imageurl = `${req.protocol}://${req.get("host")}/images/${
+        req.file.filename
+      }`;
+    }
+    const updated = await models.User.update(
+      {
+        firstname: user.firstname,
+        lastname: user.lastname,
+        imageurl: user.imageurl,
+      },
+      { where: { id: req.params.id } }
+    );
+    res.status(200).json({
+      user
+    });
+  }
+}
 exports.deleteProfil = (req, res, next) => {
 
 // recuperation de l'user id depui dle token

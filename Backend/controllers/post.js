@@ -96,7 +96,7 @@ exports.modifyPost = (req, res, next) => {
     }else{
       post.update({
         content: (content ? content : post.content),
-        imageUrl: (imageUrl ? imageUrl: user.imageUrl)
+        imageUrl: (imageUrl ? imageUrl: post.imageUrl)
       })
     }
     res.status(200).json(post)})
@@ -122,8 +122,8 @@ exports.modifyPost = (req, res, next) => {
       where: { id: req.params.id },
     })
     .then((post)=>{
-      console.log('post--->');
-      console.log(post);
+      /* console.log('post--->');
+      console.log(post); */
       if (post.userId == userPostId || isAdmin === true) {
         if (imageUrl !== null) {
           const filename = post.imageUrl.split('/images/')[1];

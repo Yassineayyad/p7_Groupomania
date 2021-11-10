@@ -94,18 +94,21 @@ export default {
          }).catch((err) => console.log(err))
 
       },
-            createAccount: function () {
-               const self = this;
-               this.$store.dispatch('createAccount', {
-                  email: this.email,
-                  lastname: this.lastname,
-                  firstname: this.firstname,
-                  password: this.password,
-                  }).then(() => {
-                     self.loginAccount()
-                  }).catch((err) => console.log(err))
+      createAccount: function () {
+         const self = this;
+         this.$store.dispatch('createAccount', {
+            email: this.email,
+            lastname: this.lastname,
+            firstname: this.firstname,
+            password: this.password,
+         }).then(() => {
+             self.loginAccount();
+         })
+         .then(() => {
+            self.$router.push('/home');
+         }).catch((err) => console.log(err))
                
-               },
+      },
    },
 }
 </script>
