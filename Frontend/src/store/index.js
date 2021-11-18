@@ -35,6 +35,7 @@ const store = createStore({
       lastname: "",
       email: "",
       imageurl:"",
+      isAdmin:"",
     },
   },
   mutations: {

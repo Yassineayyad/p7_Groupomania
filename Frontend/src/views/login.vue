@@ -27,7 +27,7 @@
          <span v-if="status == 'loading'">Connexion en cours ...</span>
          <span v-else>connexion</span>
          </button>
-         <button @click="createAccount()" type="submit" id="btn-signup" class="btn-submit" :class="{'btn--disabled' : !validFild}"  v-else>
+         <button @click.prevent="createAccount()" type="submit" id="btn-signup" class="btn-submit" :class="{'btn--disabled' : !validFild}"  v-else>
             <span v-if="status == 'loading'">Creation de compte en cours ...</span>
             <span v-else>S'inscrite</span>
          </button>
@@ -95,18 +95,16 @@ export default {
 
       },
       createAccount: function () {
-         const self = this;
+        
          this.$store.dispatch('createAccount', {
             email: this.email,
             lastname: this.lastname,
             firstname: this.firstname,
             password: this.password,
          }).then(() => {
-             self.loginAccount();
+            return this.loginAccount();
          })
-         .then(() => {
-            self.$router.push('/home');
-         }).catch((err) => console.log(err))
+         .catch((err) => console.log(err))
                
       },
    },

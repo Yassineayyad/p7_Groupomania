@@ -96,6 +96,7 @@ exports.login = (req, res, next) => {
           res.setHeader("Authorization", "Bearer " + newToken);
           res.status(200).json({
             userId: user.id,
+            isAdmin: user.isAdmin,
             token: newToken,
           });
         })
@@ -106,7 +107,7 @@ exports.login = (req, res, next) => {
 
 exports.getUserProfil = (req, res, next) => {
   models.User.findOne({ 
-    attributes: ['id', 'firstname','lastname', 'email', 'imageurl'],
+    attributes: ['id', 'firstname','lastname', 'email', 'imageurl', 'isAdmin'],
     where: {id: req.params.id} })
     .then((user) =>
     { if (user == null){

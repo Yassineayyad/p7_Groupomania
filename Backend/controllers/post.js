@@ -28,7 +28,8 @@ exports.getAllPost = (req, res, next) => {
 // cration des posts
 
 exports.createPost = async (req, res, next) => {
-  let content = req.body
+  let content = req.body;
+  let imageUrl =null;
   const headerAuth = req.headers['authorization']
   const token = headerAuth.split(" ")[1]
   /* console.log("token - post");
@@ -52,7 +53,7 @@ exports.createPost = async (req, res, next) => {
       ...content,
       UserId: userId,
       likes: likes,
-      imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,   // on resout chaque segment de l'url
+      imageUrl: imageUrl   // on resout chaque segment de l'url
     });
     /* newPost = await models.Post.findOne({
       where: { id: post.id },
@@ -78,29 +79,40 @@ exports.modifyPost = (req, res, next) => {
   console.log(token); */
   const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
   userId = decoded.userId;
-  let imageUrl = `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`;
   models.Post.findOne({
     attributes: ["id", "content", "userId", "imageUrl"],
     where: {id: req.params.id},
-    where: {},
-    include: [{
-      model:models.User,
-      where: {}
-    }],
+    
   })
   .then((post)=>{
+    console.log("post----->");
+    console.log(post);
     if (post == null) {
-      res.status(404).json({err: "le poste n'existe pas"})
-    }else{
-      post.update({
-        content: (content ? content : post.content),
-        imageUrl: (imageUrl ? imageUrl: post.imageUrl)
-      })
+      res.status(404).json({ err: "le poste n'existe pas" });
+    } else {
+      if (req.file) {
+        post.imageUrl = `${req.protocol}://${req.get("host")}/images/${
+          req.file.filename
+        }`;
+      }
+      let imageUrl = ''
+       /*  let imageUrl = `${req.protocol}://${req.get("host")}/images/${
+          req.file.filename
+        }`; */
+        console.log("req.file");
+        console.log(req.file);
+        post.update({
+          content: content ? content : post.content,
+          imageUrl: imageUrl ? imageUrl : post.imageUrl,
+        });
+      res.status(200).json(post);
     }
-    res.status(200).json(post)})
-    .catch((err) => res.status(400).json({ err : "erreur 400" }));
+    })
+      .catch((err) => {
+
+        console.log(err);
+        res.status(400).json({ err : "erreur 400" });
+      })
   };
 
   // supprimer le post 
@@ -122,26 +134,101 @@ exports.modifyPost = (req, res, next) => {
       where: { id: req.params.id },
     })
     .then((post)=>{
-      /* console.log('post--->');
-      console.log(post); */
-      if (post.userId == userPostId || isAdmin === true) {
+      console.log('post--->');
+      console.log(post.dataValues);
+      const imageUrl = post.dataValues.imageUrl;  
+      if (post.dataValues.userId == userPostId || isAdmin == true) {
         if (imageUrl !== null) {
-          const filename = post.imageUrl.split('/images/')[1];
+          const filename = post.imageUrl.split("/images/")[1];
           fs.unlink(`images/${filename}`, () => {
-                    Posts.destroy({ where: {id: req.params.id} })
-                    .then(() => res.status(200).json({ message: 'Poste et image supprimés !' }))
-                    .catch(error => res.status(400).json({ error }))
-                  });
-        }else{
-          Posts.destroy({ where: {id: req.params.id}})
-          .then(()=> res.status(200).json({message : 'poste supprimé !'}))
-          .catch(err => res.status(400).json({err}))
+            Posts.destroy({ where: { id: req.params.id } })
+              .then(() =>
+                res.status(200).json({ message: "Poste et image supprimés !" })
+              )
+              .catch((error) => res.status(400).json({ error }));
+          });
+        } else {
+          post
+            .destroy()
+            .then(() => res.status(200).json({ message: "poste supprimé !" }))
+            .catch((err) => res.status(400).json({ err }));
         }
-      }else{
-        res.status(404).json({ 'error': 'Vous n\'avez pas les droits' });
-        console.log(post.UserId);
-        console.log(userId);
+      } else {
+        return res.status(404).json({ error: "Vous n'avez pas les droits" });
+        /* console.log(post.UserId);
+        console.log(userId); */
       }
     })
-    .catch(err => res.status(500).json({err :' poste introuvable'}));
+    .catch((err) =>{ 
+      console.log(err);
+      res.status(500).json({err :' poste introuvable'})
+    });
   }
+   exports.likePost = (req, res, next) => {
+     const headerAuth = req.headers["authorization"];
+     const token = headerAuth.split(" ")[1];
+     const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
+     userId = decoded.userId;
+
+     const postId = parseInt(req.query.postId);
+     if (postId <= 0) {
+       return res.status(400).json({ err: "parametre invalide" });
+     }
+     models.Post.findOne({
+       where: { id: postId },
+     })
+       .then((res) => {
+         res.status(200).json({ res });
+       })
+       .catch((err) => res.status(500).json);
+   };
+   exports.creatComment = async (req, res, next) => {
+     let content = req.body;
+     const headerAuth = req.headers["authorization"];
+     const token = headerAuth.split(" ")[1];
+     const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
+     userId = decoded.userId;
+     if (req.file) {
+       content = req.body;
+       imageUrl = `${req.protocol}://${req.get("host")}/images/${
+         req.file.filename
+       }`;
+       parentId = id;
+     }
+     try {
+       const newComment = await models.Post.create({
+         ...content,
+         UserId: userId,
+         likes: likes,
+         parentId: id,
+         imageUrl: `${req.protocol}://${req.get("host")}/images/${
+           req.file.filename
+         }`, // on resout chaque segment de l'url
+       });
+       res.status(201).json({ newComment });
+       console.log("---> newComment");
+       console.log(newComment);
+     } catch (error) {
+       console.log(error);
+       res.status(400).json({ error });
+     }
+   };
+   exports.getOnePost = (req, res, next) => {
+     models.Post.findOne({
+      
+       where: { id: req.params.id },
+       include: [
+         {
+           model: models.User,
+           where: {},
+         },
+       ],
+     }).then((post) => {
+       if (post == null) {
+         res
+           .status(404)
+           .json({ message: "le poste n'existe pas ou à été supprimé" });
+       }
+       res.status(200).json(post);
+     });
+   }

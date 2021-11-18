@@ -27,7 +27,7 @@
                     <button class="btn" @click="modal= !modal" >Annuler</button>
                     <button class="btn btn-vld" @click="updateProfile()">Valider</button>
                     </div>
-                    <button class="btn btn-spr" @click="deleteProfil(user)">Supprimer mon compte</button>
+                    <button class="btn btn-spr" @click="deleteProfil(user)">Desactiver mon compte</button>
                 </div>
                 <div v-else>
                     <p class="info">{{user.firstname}} {{user.lastname}} </p>
