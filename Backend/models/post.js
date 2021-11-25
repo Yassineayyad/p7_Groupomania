@@ -19,14 +19,18 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
  
-  Post.init({
-    UserId: DataTypes.INTEGER,
-    content: DataTypes.STRING,
-    likes: DataTypes.INTEGER,
-    imageUrl: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'Post',
-  });
+  Post.init(
+    {
+      UserId: DataTypes.INTEGER,
+      content: DataTypes.STRING,
+      likes: DataTypes.INTEGER,
+      imageUrl: DataTypes.STRING,
+      parentId: DataTypes.INTEGER,
+    },
+    {
+      sequelize,
+      modelName: "Post",
+    }
+  );
   return Post;
 };

@@ -7,15 +7,14 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
-        
       },
       UserId: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        references:{
-          model:'Users',
-          key:'id'
-        }
+        references: {
+          model: "Users",
+          key: "id",
+        },
       },
       content: {
         allowNull: false,
@@ -36,6 +35,12 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
+      },
+      parentId: {
+        allowNull: true,
+        autoIncrement: false,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
       },
     });
   },

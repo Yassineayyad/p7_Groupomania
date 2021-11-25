@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
         deleted: true,
         email: `deleted-user${this.id}@groupomania.com`,
         imageUrl: null,
-        firstName: 'Utilisateur',
-        lastName: 'Supprimé'
+        firstname: 'Utilisateur',
+        lastname: 'Supprimé'
       })
     }
   

@@ -4,7 +4,7 @@ import home from '@/views/home.vue';
 import profil from '@/views/profil.vue';
 import onepost from '@/views/onepost.vue';
 import userprofil from "@/views/userprofil.vue";
-
+import comment from "@/views/comment.vue";
 
 const routes = [
   {
@@ -45,6 +45,14 @@ const routes = [
     component: userprofil,
     meta: {
       title: "profile groupomania",
+    },
+  },
+  {
+    name: "comment",
+    path: "/comment/:id",
+    component: comment,
+    meta: {
+      title: " ajoutez un commentaire",
     },
   },
 ];

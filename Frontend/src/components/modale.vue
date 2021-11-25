@@ -7,7 +7,7 @@
       
       <div class="modale card">
           <div @click="toggleModale" class="btn-modale btn btn-danger">x</div>
-          <h2>Modifier votre profile</h2>
+          <h2>Commentaire</h2>
           <div  class="img--update">
                     <label for="image">Modifier votre photo de profile</label>
                     <input type="file" id="image" name="image"/>

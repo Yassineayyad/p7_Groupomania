@@ -34,7 +34,7 @@
             <div class="item">
               <p>Message</p>
               
-              <textarea class="content" :placeholder="`Vous voulez modifier votre Post , ${user.lastname}?`" v-model="content"></textarea>
+              <textarea class="content" :placeholder="`Vous voulez modifier votre Post , ${user.lastname}?`" v-model="post.content" rows="7" cols="60"></textarea>
             </div>
             <div class="item">
               <p>Ajouter une image</p>
@@ -110,6 +110,7 @@ export default{
        
     mounted: function () {
       this.takeOnePost()
+      
       setTimeout(() => {
         console.log(this.$store.state.user);
       if (this.$store.state.user.userId == -1) {
@@ -135,15 +136,15 @@ export default{
          console.log(postId);
          axios.get(`http://localhost:3000/api/post/${postId}`, { header })
          .then((res)=>{
-             this.post= res.data
-             console.log(res.data.User.imageurl);
+             this.post= res.data;
+             console.log(this.post.content);
          })
          .catch((err) => {
          console.log(err);
        });
      },
     updatePost : function() {
-     
+      
       const token = this.$store.state.user.token;
       console.log("token");
       console.log(headers);
@@ -154,15 +155,17 @@ export default{
       };
        const postUpdate = new FormData();
     if (this.imageUrl !== null) {
-        postUpdate.append('content',this.content);
+        postUpdate.append('content',this.post.content);
         postUpdate.append('image', this.imageUrl);
     }else{
-        postUpdate.append('content',this.content);  
+        postUpdate.append('content',this.post.content);  
     }
+    
       axios.put(`http://localhost:3000/api/post/${postId}`,postUpdate , {headers})
       .then((res) => {
         if (res) {
           alert("Votre message a été modifié")
+          this.$router.push('/home');
           }
         })
         .catch((error) => {

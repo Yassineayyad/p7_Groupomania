@@ -43,86 +43,90 @@
         <div class="card__title">
           <img
             class="card-img"
-            :src="post.User.imageurl"
+            :src="post.post_owner_image"
             alt="photo de profile"
           />
           <h1 class="title">
-            {{ post.User.firstname }} {{ post.User.lastname }}
+            {{ post.post_owner_firstname }} {{ post.post_owner_lastname }}
           </h1>
         </div>
         <div>
 
             
-            <h3>{{ post.title }}</h3>
-            <p class="card__content">{{ post.content }}</p>
-            <img :src="post.imageUrl" alt="" class="post--img" />
+            
+            <p class="card__content">{{ post.post_content }}</p>
+            <img :src="post.post_img" alt="" class="post--img" />
             
 
             <button
-              v-if="post.UserId == this.$store.state.user.userId"
-             @click="$router.push({ name:'onepost', params: { id: post.id },})"
+              v-if="post.post_userId == this.$store.state.user.userId"
+             @click="$router.push({ name:'onepost', params: { id: post.post_id },})"
             >
               Modifier
             </button>
             <button
-              v-if="post.UserId == this.$store.state.user.userId || this.$store.state.user.isAdmin == true"
+              v-if="post.post_userId == this.$store.state.user.userId || this.$store.state.user.isAdmin == true"
               @click.prevent="deletePost(post)"
             >
               Supprimer
             </button> <br>
-            <a href="mailto:admin@groupomania.com?subject=report from groupomania">signalez ce post</a>
-          
+            <div class="creatupdate">
+
+           <!--  <p v-if="post.post_created!== post.post_updated" class="card-date" > Modifié le {{ post.post_updated.slice(0, 10).split("-").reverse().join("/") }} à {{ post.updatedAt.slice(11, 16).split(":").join("h") }} </p>
             <p class="card-date">
               Posté le
-              {{ post.createdAt.slice(0, 10).split("-").reverse().join("/") }} à {{ post.createdAt.slice(11, 16).split(":").join("h") }}
-            </p>
-            <button class="btn-like">j'aime</button>
-            <button class="btn-comnt" @click="commentaire = !commentaire" >Commenter</button>
-        </div>
-         <div v-if="update">
-          <form class="createPost">
-            <h1>Modifiez Votre message</h1>
-            <div class="item">
-              <p>Message</p>
-              
-              <textarea class="content" :placeholder="`Vous voulez modifier votre Post , ${user.lastname}?`" v-model="content"></textarea>
+              {{ post.post_created.slice(0, 10).split("-").reverse().join("/") }} à {{ post.post_created.slice(11, 16).split(":").join("h") }}
+            </p> -->
+            
             </div>
-            <div class="item">
-              <p>Ajouter une image</p>
-              <input type="file" name="image" @change="onFileSelected" />
-            </div>
-            <button @click.prevent="updatePost()">
-              Modifier ! 
-            </button>
-            <button @click="update == !update">Annuler</button>
-          </form>
+            <a id="report" :href="`${post.mailto}`" >signalez</a>
+
+            
+
+             <!-- 
+            Commentaire        -->
+          <div >
+              --------------------------------------------------------------------------------------<br>
+                <h3>Commenter: </h3>
+
+            <button class="btn-comnt"  @click="$router.push({ name:'comment', params: { id: post.post_id },})" > Commentez ! </button>
+                <div v-for="comment in post.post_comments_array" :key="comment" class="commentCard">
+            <p v-if="comment.comment_id == null">soyez le premier a commenter ce post</p>
+                  <div v-if="comment.comment_id != null">
+
+                    <div class="card--comment">
+                      <img
+                      class="card-img"
+                      :src="comment.comment_owner_image"
+                      alt="photo de profile"
+                      />
+                      <h1 class="title">
+                        {{ comment.comment_owner_firstname }} {{ comment.comment_owner_lastname }}
+                      </h1>
+                    </div>
+                      <div class="comment">
+                        <p>{{comment.comment_content}}</p>
+                        <img :src="comment.comment_img" alt="" class="comment--img" />
+                      </div>
+                      <button
+                        v-if="comment.comment_userId == this.$store.state.user.userId || this.$store.state.user.isAdmin == true"
+                        @click.prevent="deletePost(post)"
+                      >
+                        Supprimer
+                      </button>
+                  </div>
+
+                </div>
+
+
+
+          </div>
+           
+
         </div>
-        <div v-if="commentaire">----------------------------------------------------------------------------------
-          
-            <form class="createPost">
-              <div class="item">
-                Votre commentaires : <br/>
-
-              
-                <textarea class="Commentaire"  rows="7" cols="60" v-model="content"></textarea>
-              </div>
-              <div class="item">
-                <p>Ajouter une image</p>
-                <input type="file" name="image" @change="onFileSelected" />
-              </div>
-              <button class="btn" @click="commentaire = !commentaire" >Annuler</button>
-              <button class="btn btn-vld" @click="comment">Commentez ! </button>
-            </form>
-
-        </div>
 
 
-        <div class="card-commentaire" v-for="post in posts" :key="post" :where= "parentId = postId">
-
-
-
-
-        </div>
+        
       </div>
     </div>
   </div>
@@ -132,12 +136,16 @@
 /* import { computed } from '@vue/reactivity'; */
 import { mapState } from "vuex";
 import axios from "axios";
+
 export default {
   name: "home",
+
+  
   data() {
     return {
       content: "",
       postId:"",
+      createdAt:"",
       imageUrl: null,
       firstname: "",
       lastname: "",
@@ -147,6 +155,9 @@ export default {
       commentaire : false,
       errPost: false,
       update : false,
+      
+      
+      
     };
   },
   computed: {
@@ -163,18 +174,41 @@ export default {
       user: "userInfos",
     }),
      },
-  
+ 
 
   created() {
     axios
       .get("http://localhost:3000/api/post")
       .then((res) => {
-        this.posts = res.data;
+    
+        this.posts = res.data.map(item => {
+          item["mailto"]="mailto:admin@groupomania.com?subject=report from groupomania postId :" + item.post_id;
+
+          return item
+        })
         console.log(this.posts);
+
       })
       .catch((err) => {
         console.log(err);
       });
+      
+      /* const postId = this.posts.id;
+      console.log(postId);
+     axios
+      .get(`http://localhost:3000/api/post/${postId}`)
+      .then((res) => {
+        this.comments = res.data
+        
+        console.log("res");
+        console.log(res);
+
+      })
+      .catch((err) => {
+        console.log(err);
+      }); */
+       
+     
   },
   mounted: function () {
     setTimeout(() => {
@@ -185,12 +219,63 @@ export default {
       }
       this.$store.dispatch("getUserInfo");
     }, 200);
+     /* const token = this.$store.state.user.token;
+      console.log("token");
+      console.log(postId);
+      const postId = this.posts.id;
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+     axios
+      .get(`http://localhost:3000/api/post/${postId}`, {headers})
+      .then((res) => {
+    
+        this.posts = res.data.map(item => {
+          item["mailto"]="mailto:admin@groupomania.com?subject=report from groupomania postId :" + item.id;
+
+          return item
+        })
+        console.log(this.posts);
+
+      })
+      .catch((err) => {
+        console.log(err);
+      }); */
+
   },
+ /*  getcomment: function(){
+     const token = this.$store.state.user.token;
+      console.log("token");
+      console.log(headers);
+      const postId = this.posts.id;
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+     axios
+      .get(`http://localhost:3000/api/post/${postId}`, {headers})
+      .then((res) => {
+    
+        this.posts = res.data.map(item => {
+          item["mailto"]="mailto:admin@groupomania.com?subject=report from groupomania postId :" + item.id;
+
+          return item
+        })
+        console.log(this.posts);
+
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }, */
+  
   methods: {
     logout: function () {
       this.$store.commit("logout");
       this.$router.push("/");
     },
+    
     deletePost: function (post) {
       const token = this.$store.state.user.token;
       console.log("token");
@@ -265,7 +350,9 @@ export default {
         };
         console.log("headers");
         console.log(headers);
-        axios
+        
+          
+          axios
           .post("http://localhost:3000/api/post", data, { headers })
           .then((res) => {
             console.log(res);
@@ -277,40 +364,11 @@ export default {
             console.log(err);
           });
       }
+            
     },
 
 
-    comment: function () {
-      const token = this.$store.state.user.token;
-      console.log("token");
-      console.log(token);
-      const data = new FormData();
-      if (this.imageUrl !== null) {
-        data.append("content", this.content);
-        data.append("parentId", this.postId);
-        data.append("image", this.imageUrl, this.imageUrl.name);
-      } else {
-        data.append("content", this.content);
-        data.append("parentId", this.postId);
-      }
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      };
-      console.log("headers");
-      console.log(headers);
-      axios
-        .post("http://localhost:3000/api/post", data, { headers })
-        .then((res) => {
-            console.log(res);
-          alert("votre message a bien été posté !");
-          this.$router.push("/home");
-          location.reload();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
+    
   },
 
   //data.append("parentId", this.postId)
@@ -442,5 +500,30 @@ a{
     cursor:not-allowed;
     background:#cecece;
     color: black;
+}
+.creatupdate{
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+#report{
+  display: flex;
+
+}
+.card--comment{
+  display: flex;
+  background:rgb(246, 187, 139);
+  border-radius: 20px ;
+  margin-bottom: 10px;
+  
+}
+.comment--img{
+  width: 250px;
+  
+}
+.commentCard{
+  background: rgb(231, 200, 142);
+  margin: 10px 10px;
+  border-radius: 20px;
 }
 </style>
