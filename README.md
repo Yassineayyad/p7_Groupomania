@@ -13,7 +13,7 @@ Une application pour l'entreprise Groupomania dans le but de faciliter les inter
 * Express
 * vue.js
 
-### lancer l'API :
+### lancer l'Application :
 1. Cloner le repositorie
 2. ' npm install ' dans les dossiers /backend et /frontend
 3. ' npm start ' coté  /backend
