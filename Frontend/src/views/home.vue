@@ -110,7 +110,7 @@
                       </div>
                       <button
                         v-if="comment.comment_userId == this.$store.state.user.userId || this.$store.state.user.isAdmin == true"
-                        @click.prevent="deletePost(post)"
+                        @click.prevent="deleteComment(comment)"
                       >
                         Supprimer
                       </button>
@@ -193,21 +193,6 @@ export default {
         console.log(err);
       });
       
-      /* const postId = this.posts.id;
-      console.log(postId);
-     axios
-      .get(`http://localhost:3000/api/post/${postId}`)
-      .then((res) => {
-        this.comments = res.data
-        
-        console.log("res");
-        console.log(res);
-
-      })
-      .catch((err) => {
-        console.log(err);
-      }); */
-       
      
   },
   mounted: function () {
@@ -219,68 +204,37 @@ export default {
       }
       this.$store.dispatch("getUserInfo");
     }, 200);
-     /* const token = this.$store.state.user.token;
-      console.log("token");
-      console.log(postId);
-      const postId = this.posts.id;
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      };
-     axios
-      .get(`http://localhost:3000/api/post/${postId}`, {headers})
-      .then((res) => {
-    
-        this.posts = res.data.map(item => {
-          item["mailto"]="mailto:admin@groupomania.com?subject=report from groupomania postId :" + item.id;
-
-          return item
-        })
-        console.log(this.posts);
-
-      })
-      .catch((err) => {
-        console.log(err);
-      }); */
-
   },
- /*  getcomment: function(){
-     const token = this.$store.state.user.token;
-      console.log("token");
-      console.log(headers);
-      const postId = this.posts.id;
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      };
-     axios
-      .get(`http://localhost:3000/api/post/${postId}`, {headers})
-      .then((res) => {
-    
-        this.posts = res.data.map(item => {
-          item["mailto"]="mailto:admin@groupomania.com?subject=report from groupomania postId :" + item.id;
-
-          return item
-        })
-        console.log(this.posts);
-
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    }, */
   
   methods: {
     logout: function () {
       this.$store.commit("logout");
       this.$router.push("/");
     },
-    
+     deleteComment: function (comment) {
+      const token = this.$store.state.user.token;
+      console.log("token");
+      console.log(comment);
+      const commentId = comment.comment_id;
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      axios
+        .delete(`http://localhost:3000/api/post/${commentId}`, {headers})
+        .then((err) => {
+          if (err) {
+            console.log(err);
+            }
+            alert("votre Poste a bien été supprimé !");
+            window.location.reload()
+        }).catch((err) => console.log(err))
+    },
     deletePost: function (post) {
       const token = this.$store.state.user.token;
       console.log("token");
-      console.log(headers);
-      const postId = post.id;
+      console.log(post);
+      const postId = post.post_id;
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -371,12 +325,13 @@ export default {
     
   },
 
-  //data.append("parentId", this.postId)
-  
 };
 </script>
 
 <style scoped>
+#app{
+  width: auto;
+}
 .header {
   display: flex;
   justify-content: space-between;
@@ -386,7 +341,22 @@ export default {
 }
 @media only screen and (max-width: 600px) {
   .header-info {
-    display: none;
+    margin: 10px 0;
+    background: chocolate;
+     padding: 0 10px;
+  }
+  .header {
+    width: 100%;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+  .card{
+    margin: auto;
+    width: 330px !important;
+  }
+  .about{
+    margin: auto;
+    width: auto;
   }
 }
 .header-info {

@@ -8,12 +8,11 @@ const auth = require("../middleware/auth");
 const postCtrl = require("../controllers/post");
 
 router.post("/", auth, multer, postCtrl.createPost);
-/* router.post("/", auth, multer, postCtrl.createcomment); */
 router.get("/", postCtrl.getAllPost);
 router.put("/:id", auth, multer, postCtrl.modifyPost);
 router.delete("/:id", auth, postCtrl.deletePost);
 router.get("/:id", postCtrl.getOnePost);
-/* 
-router.post("/:id/like", auth, postCtrl.likeDislikePost); */
+
+
 
 module.exports = router;

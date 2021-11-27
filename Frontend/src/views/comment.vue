@@ -120,7 +120,6 @@ export default{
             console.log(res);
           alert("votre commentaire  a bien été posté !");
           this.$router.push("/home");
-          location.reload();
         })
         .catch((err) => {
           console.log(err);
@@ -147,8 +146,18 @@ export default{
   width: 100%;
 }
 @media only screen and (max-width: 600px) {
-  .header-info {
-    display: none;
+ .header-info {
+    margin: 10px 0;
+    background: chocolate;
+    padding: 0 10px;
+  }
+  .header {
+    width: 100%;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+  .content{
+    width: 100%;
   }
 }
 .header-info {

@@ -2,18 +2,16 @@
 // importation du model de la bdd user.js
 const models = require("../models");
 const bcrypt = require("bcrypt");
-const cryptojs = require("crypto-js");
 const jwt = require("jsonwebtoken");
-const { mode } = require("crypto-js");
 const user = require("../models/user");
 require("dotenv").config({ path: "./config/.env" });
 
-// const
+// Regex 
 const emailRegex =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const passwordRegex = /^(?=.*\d).{4,8}$/;
-// exporter la fonction signup qui permettra de créé un compte
 
+// Creation de compte
 exports.signup = (req, res, next) => {
   // params
   //chiffrer l'email avant de l'envoyer a la base de données
@@ -68,6 +66,8 @@ exports.signup = (req, res, next) => {
     .catch((err) => res.status(500).json({ err }));
 };
 
+// System de connexion 
+
 exports.login = (req, res, next) => {
   // params
   let email = req.body.email;
@@ -105,6 +105,8 @@ exports.login = (req, res, next) => {
     .catch((err) => res.status(500).json({ err }));
 };
 
+// recuperation du profile de l'utilistateur
+
 exports.getUserProfil = (req, res, next) => {
   models.User.findOne({ 
     attributes: ['id', 'firstname','lastname', 'email', 'imageurl', 'isAdmin'],
@@ -112,16 +114,11 @@ exports.getUserProfil = (req, res, next) => {
     .then((user) =>
     { if (user == null){
       res.status(404).json({ err: "l'utilisateur n'existe pas"})
-    }
-    /* let emailDecrypt = cryptojs.AES.decrypt(
-      email,
-      `${process.env.CRYPTOJS_KEY_EMAIL}`
-    ).toString(cryptojs.enc.HmacSHA256) */
-    
+    }   
        res.status(200).json(user)})
       .catch((error) => res.status(400).json({ error }));
 };
-
+// Modification du profil
 exports.updateProfil = async (req, res, next) => {
   const user = models.User.findOne({
     attributes: ["id", "firstname", "lastname", "imageurl"],
@@ -148,13 +145,13 @@ exports.updateProfil = async (req, res, next) => {
     });
   }
 }
+// Suppression du profil
 exports.deleteProfil = (req, res, next) => {
 
-// recuperation de l'user id depui dle token
+// recuperation de l'user id depuis le token
    const headerAuth = req.headers["authorization"];
    const token = headerAuth.split(" ")[1];
-   /* console.log("token - post");
-  console.log(token); */
+
    const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
    userId = decoded.userId;
    isAdmin =decoded.isAdmin;
@@ -176,7 +173,5 @@ exports.deleteProfil = (req, res, next) => {
         res.status(404).json({ error: "L'utilisateur ne peut pas être supprimé" });
       }
     })
-  /*  models.User.destroy({ where: { id: req.params.id } })
-     .then(() => res.status(200).json({ message: "utilisateur  supprimée!" }))
-     .catch((error) => res.status(400).json({ error })); */
+  
 }

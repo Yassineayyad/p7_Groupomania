@@ -38,6 +38,7 @@ const store = createStore({
       isAdmin:"",
     },
   },
+  // mutation permet de changer d'etat (state) dans une vue (store)
   mutations: {
     setStatus: function (state, status) {
       state.status = status;
@@ -59,7 +60,7 @@ const store = createStore({
       localStorage.removeItem("user");
     },
   },
-
+// actions :  equivalent a mutatuion avec la seul difference au lieu de mutter l'etat  les action commettent la mutation 
   actions: {
     createAccount: ({ commit }, userInfos) => {
       return new Promise((resolve, reject) => {
@@ -69,9 +70,9 @@ const store = createStore({
           .then(function (res) {
             resolve(res);
             commit("setStatus", "signup");
-            /* commit("logUser", res.data); */
+           
             console.log(res.data);
-            /* localStorage.setItem("user", JSON.stringify(res.data)); */
+            
           })
           .catch(function (error) {
             reject(error);
@@ -89,7 +90,6 @@ const store = createStore({
           commit("setStatus", "login");
           commit("logUser", res.data);
           console.log(res.data);
-          /* localStorage.setItem('user', JSON.stringify(res.data)); */
         })
         .catch(function (error) {
           commit("setStatus", "error_login");
@@ -104,8 +104,6 @@ const store = createStore({
         .then(function (res) {
           commit("userInfos", res.data);
           console.log(res.data);
-          /*  localStorage.setItem('user', JSON.stringify(res.data));
-          localStorage.setItem("res", JSON.stringify(res.status)); */
         })
         .catch(function (error) {
           console.log(error);

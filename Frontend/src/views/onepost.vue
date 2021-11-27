@@ -18,16 +18,7 @@
       </nav>
     </div>
 
-    <!-- <div class="card__title">
-          <img
-            class="card-img"
-            :src="post.User.imageurl"
-            alt="photo de profile"
-          />
-          <h1 class="title">
-            {{ post.User.firstname }} {{ post.User.lastname}}
-          </h1>
-    </div> -->
+    
         <div v-if="update">
           <form class="createPost">
             <h1>Modifiez Votre message</h1>
@@ -206,5 +197,20 @@ export default{
 }
 .header-img {
   width: 200px;
+}
+@media only screen and (max-width: 600px) {
+ .header-info {
+    margin: 10px 0;
+    background: chocolate;
+    padding: 0 10px;
+  }
+  .header {
+    width: 100%;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+  .content{
+    width: 100%;
+  }
 }
 </style>

@@ -83,14 +83,16 @@ export default {
      login: function () {
         this.mode = 'login';
         },
-      loginAccount: function() {
+      loginAccount:  function() {
          
          const self = this;
+         // dispatch sert a declancer l'action 
          this.$store.dispatch('loginAccount', {
             email: this.email,
             password: this.password,
-         }).then(() => {  
-            self.$router.push('/home');  
+         }).then(() => {
+              self.$router.push('/home');
+          
          }).catch((err) => console.log(err))
 
       },

@@ -11,26 +11,12 @@ const { QueryTypes } = require("sequelize");
 // les fonction
 
 
-// recuperation des postes
-
-/* exports.getAllPost = (req, res, next) => {
-  models.Post.findAll({
-    where: {parentId : null},
-    include: [{
-      model:models.User,
-      where: {}
-    }],
-    order: [['id', 'DESC']]
-    
-  })
-    .then((post) => res.status(200).json(post))
-    .catch((error) => res.status(400).json({ error }));
-}; */
-
-
-
+// recuperation des postes et leurs commentaire 
 
 exports.getAllPost =  async (req, res, next) => {
+
+  // rename et organisation de ma table avec des Alias 
+
  const posts = await sequelize.query(
    `select
 p.id as post_id,
@@ -68,7 +54,7 @@ order by p.id DESC;`,
      type: QueryTypes.SELECT,
    }
  );
-
+   // Renvoi d'une reponse avec la fonction postParser
  return res.status(200).json(postParser(posts))
 
 };
@@ -81,15 +67,8 @@ exports.createPost = async (req, res, next) => {
   let imageUrl =null;
   const headerAuth = req.headers['authorization']
   const token = headerAuth.split(" ")[1]
-  /* console.log("token - post");
-  console.log(token); */
   const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
   userId= decoded.userId
-  let likes = 0
-  /* console.log("userId - post");
-  console.log(userId); */
-  /*  console.log('--> content');
-  console.log(content); */
   if (req.file) {
     
     content = req.body;
@@ -101,16 +80,10 @@ exports.createPost = async (req, res, next) => {
     const newPost = await models.Post.create({
       ...content,
       UserId: userId,
-      likes: likes,
       imageUrl: imageUrl   // on resout chaque segment de l'url
     });
-    /* newPost = await models.Post.findOne({
-      where: { id: post.id },
-      include: models.User,
-    }); */
     res.status(201).json({ newPost });
-    console.log("---> newPost");
-    console.log(newPost);
+
   }catch (error){
     console.log(error);
     res.status(400).json({ error });
@@ -125,8 +98,6 @@ exports.modifyPost = (req, res, next) => {
   let updatedAt = Date.now;
   const headerAuth = req.headers["authorization"];
   const token = headerAuth.split(" ")[1];
-  /* console.log("token - post");
-  console.log(token); */
   const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
   userId = decoded.userId;
   models.Post.findOne({
@@ -145,9 +116,7 @@ exports.modifyPost = (req, res, next) => {
           }`;
         }
         let imageUrl = "";
-        /*  let imageUrl = `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`; */
+    
         console.log("req.file");
         console.log(req.file);
         post.update({
@@ -171,8 +140,7 @@ exports.modifyPost = (req, res, next) => {
     //recuperation du token 
     const headerAuth = req.headers["authorization"];
     const token = headerAuth.split(" ")[1];
-    /* console.log("token - post");
-  console.log(token); */
+
     const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
     userPostId = decoded.userId;
     isAdmin = decoded.isAdmin;
@@ -184,7 +152,7 @@ exports.modifyPost = (req, res, next) => {
     })
     .then((post)=>{
       console.log('post--->');
-      console.log(post.dataValues);
+      console.log(post);
       const imageUrl = post.dataValues.imageUrl;  
       if (post.dataValues.userId == userPostId || isAdmin == true) {
         if (imageUrl !== null) {
@@ -204,8 +172,7 @@ exports.modifyPost = (req, res, next) => {
         }
       } else {
         return res.status(404).json({ error: "Vous n'avez pas les droits" });
-        /* console.log(post.UserId);
-        console.log(userId); */
+     
       }
     })
     .catch((err) =>{ 
@@ -213,25 +180,9 @@ exports.modifyPost = (req, res, next) => {
       res.status(500).json({err :' poste introuvable'})
     });
   }
-   exports.likePost = (req, res, next) => {
-     const headerAuth = req.headers["authorization"];
-     const token = headerAuth.split(" ")[1];
-     const decoded = jwt.verify(token, `${process.env.TOKEN_SECRET}`);
-     userId = decoded.userId;
-
-     const postId = parseInt(req.query.postId);
-     if (postId <= 0) {
-       return res.status(400).json({ err: "parametre invalide" });
-     }
-     models.Post.findOne({
-       where: { id: postId },
-     })
-       .then((res) => {
-         res.status(200).json({ res });
-       })
-       .catch((err) => res.status(500).json);
-   };
    
+  // recuperation d'un poste avec son ID 
+
    exports.getOnePost = (req, res, next) => {
      models.Post.findOne({
        where: { 
@@ -255,6 +206,9 @@ exports.modifyPost = (req, res, next) => {
      });
    }
 
+
+   // Fonction qui permet d'organiser et differencer mes post des commentaire et afficher les commentaire de chaque post
+   
    function postParser(postList) {
      const transformedPostList = [];
 

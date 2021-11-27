@@ -81,7 +81,7 @@ export default {
       this.$router.push('/');
     },
     updateProfile: function() {
-        /* this.$store.commit('updateUser') */
+        
         const token = this.$store.state.user.token
         const userId = this.$store.state.user.userId
         const headers = { 
@@ -145,6 +145,11 @@ export default {
     display: flex;
     font-size: 1.1em;
     color: white;
+}
+@media only screen and (max-width: 600px) {
+    .card-info{
+        width: 100% !important;
+    }
 }
 .header-btn{
     background: red;
