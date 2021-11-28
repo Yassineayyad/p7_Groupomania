@@ -81,21 +81,25 @@ const store = createStore({
           });
       });
     },
+
     loginAccount: ({ commit }, userInfos) => {
       commit("setStatus", "loading");
 
-      instance
-        .post("/login", userInfos)
-        .then(function (res) {
-          commit("setStatus", "login");
-          commit("logUser", res.data);
-          console.log(res.data);
-        })
-        .catch(function (error) {
-          commit("setStatus", "error_login");
-          console.log(error);
-        });
+      return new Promise((resolve, reject) => {
+        instance
+          .post("/login", userInfos)
+          .then(function (res) {
+            commit("logUser", res.data);
+            commit("setStatus", "login");
+            resolve();
+          })
+          .catch(function () {
+            commit("setStatus", "error_login");
+            reject();
+          });
+      })
     },
+
     getUserInfo: function ({ commit }) {
       let localUserId = JSON.parse(localStorage.getItem("user")).userId;
       console.log(localUserId);
