@@ -20,7 +20,9 @@ Une application pour l'entreprise Groupomania dans le but de faciliter les inter
 5. ' npm run serve' Coté /frontend 
 4. Crée un ficher .env dans le dossier config avec les information suivante 
     * CRYPTOJS_KEY_EMAIL=( votre clé de cryptage)
-    * TOKEN_SECRET= ( clé de cryptage token) 
+    * TOKEN_SECRET= ( clé de cryptage token)
+    * DATABASEUSERNAME= (nom d'utilisateur de votre BDD) 
+    * DATABASEPASSWORD= (mot de passe de votre BDD)
 
 
 <p>

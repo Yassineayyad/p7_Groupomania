@@ -14,13 +14,15 @@ module.exports = (sequelize, DataTypes) => {
       models.User.hasMany(models.Post)
     }
      destroy () {
+       const randomstring = Math.random().toString(36).slice(-8);
       return this.update({
         deleted: true,
         email: `deleted-user${this.id}@groupomania.com`,
-        imageUrl: null,
-        firstname: 'Utilisateur',
-        lastname: 'Supprimé'
-      })
+        password: randomstring,
+        imageurl:"http://image.noelshack.com/fichiers/2021/44/3/1635930291-765-default-avatar.png",
+        firstname: "Utilisateur",
+        lastname: "Supprimé",
+      });
     }
   
   };

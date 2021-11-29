@@ -23,7 +23,7 @@
             <label  for="lastname">Prenom</label><br>
             <input v-model="lastname"  type="lastname" id="lastname" name="lastname" placeholder="Olivier"><br>
          </div>
-         <div v v-if="mode == 'signup' && status == 'error_signup'">verifiez que : <br>* vous avez bien rempli tous les champs demander* <br>  *le mot de passe doit contenir au mini 4 caracteres et au moin un chiffre*</div>
+         <div v v-if="mode == 'signup' && status == 'error_signup'">verifiez que : <br>* vous avez bien rempli tous les champs demander* <br>  * l'adresse mail n'est pas deja utilisée* <br>*le mot de passe doit contenir entre 4 et 8 caracteres et au moin un chiffre*</div>
          <button @click.prevent="loginAccount()" id="btn-login" class="btn-submit" :class="{'btn--disabled' : !validFild}" v-if="mode == 'login'">
          <span v-if="status == 'loading'">Connexion en cours ...</span>
          <span v-else>connexion</span>

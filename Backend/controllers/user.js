@@ -28,7 +28,11 @@ exports.signup = (req, res, next) => {
     return res.status(400).json({ message: "merci de reseigner tous les champs " });
   }
   // verification
-
+/*   if (email == models.User.findOne({ where: { email: email } })) {
+  
+  console.log('email',email);
+  res.status(500).json({ message : "Adresse mail deja utilisé " })
+} */
   if (!emailRegex.test(req.body.email)) {
     return res.status(400).json({ err: " email n'est pas valide" });
   }

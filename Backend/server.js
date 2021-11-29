@@ -52,5 +52,7 @@ server.on("listening", () => {
   console.log("Listening on " + bind);
 });
 
+const db = require("./models");
+db.sequelize.sync();
 // le sertveur ecoute le serveur sur le port
 server.listen(port);
