@@ -23,7 +23,7 @@ Une application pour l'entreprise Groupomania dans le but de faciliter les inter
     * TOKEN_SECRET= ( clé de cryptage token)
     * DATABASEUSERNAME= (nom d'utilisateur de votre BDD) 
     * DATABASEPASSWORD= (mot de passe de votre BDD)
-
+5. Droits Administrateur Via mySQL, taper la commande suivante => UPDATE user SET isAdmin = 1 WHERE id = ❓ ; ❓ => insérer l'id de l'utilisateur que vous souhaitez mettre en Administrateur  
 
 <p>
    <img align="center" src="https://media0.giphy.com/media/L8K62iTDkzGX6/giphy.gif"/>
