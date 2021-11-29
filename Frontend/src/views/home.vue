@@ -71,12 +71,12 @@
               Supprimer
             </button> <br>
             <div class="creatupdate">
-
-           <!--  <p v-if="post.post_created!== post.post_updated" class="card-date" > Modifié le {{ post.post_updated.slice(0, 10).split("-").reverse().join("/") }} à {{ post.updatedAt.slice(11, 16).split(":").join("h") }} </p>
+             
+            <p v-if="post.post_created !== post.post_updated" class="card-date" > Modifié le {{ post.post_updated.slice(0, 10).split("-").reverse().join("/") }} à {{ post.post_updated.slice(11, 16).split(":").join("h") }} </p>
             <p class="card-date">
               Posté le
               {{ post.post_created.slice(0, 10).split("-").reverse().join("/") }} à {{ post.post_created.slice(11, 16).split(":").join("h") }}
-            </p> -->
+            </p>
             
             </div>
             <a id="report" :href="`${post.mailto}`" >signalez</a>
@@ -114,6 +114,14 @@
                       >
                         Supprimer
                       </button>
+                      <div class="creatupdate">
+                        <p v-if="comment.comment_created !== comment.comment_updated" class="card-date" > Modifié le {{ comment.comment_updated.slice(0, 10).split("-").reverse().join("/") }} à {{ post.post_updated.slice(11, 16).split(":").join("h") }} </p>
+                        <p class="card-date">
+                          Posté le
+                          {{ comment.comment_created.slice(0, 10).split("-").reverse().join("/") }} à {{ comment.comment_created.slice(11, 16).split(":").join("h") }}
+                        </p>
+                        
+                        </div>
                   </div>
 
                 </div>
