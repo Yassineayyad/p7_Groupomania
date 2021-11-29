@@ -158,7 +158,7 @@ exports.modifyPost = (req, res, next) => {
         if (imageUrl !== null) {
           const filename = post.imageUrl.split("/images/")[1];
           fs.unlink(`images/${filename}`, () => {
-            Posts.destroy({ where: { id: req.params.id } })
+            models.Post.destroy({ where: { id: req.params.id } })
               .then(() =>
                 res.status(200).json({ message: "Poste et image supprimés !" })
               )
